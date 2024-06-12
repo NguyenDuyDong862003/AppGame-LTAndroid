@@ -1,5 +1,6 @@
-package com.example.appgame3;
+package com.example.appgame3.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -22,9 +23,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.appgame3.R;
+import com.example.appgame3.model.Cell;
+import com.example.appgame3.model.Model;
+
 public class SokobanActivity extends AppCompatActivity {
     //    biến model
-    Model model = new Model();
+    Model model;
     //    biến cho View
     Button btnBack;
     Button btnResetLevel;
@@ -46,6 +51,7 @@ public class SokobanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        model = new Model(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_sokoban);
 
@@ -164,6 +170,7 @@ public class SokobanActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void registerEvent() {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,8 +261,8 @@ public class SokobanActivity extends AppCompatActivity {
     private boolean effectWhenDungChungO() {
         // Thêm vô hiệu ứng khi 2 nhân vật chung vị trí
         Cell currentPos = model.getPositionCharacter();
-        int rowCur = currentPos.row;
-        int colCur = currentPos.col;
+        int rowCur = currentPos.getRow();
+        int colCur = currentPos.getCol();
         if (model.board[rowCur][colCur] == Model.PLAYER_BOMB) {
             containerThanhDieuKhien.setBackgroundResource(R.drawable.ttg_tang_hoa);
             if (dungChungO == false) {

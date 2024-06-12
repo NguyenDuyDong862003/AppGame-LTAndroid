@@ -1,7 +1,8 @@
-package com.example.appgame3;
+package com.example.appgame3.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 
@@ -11,12 +12,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.appgame3.R;
+
 public class MainActivity extends AppCompatActivity {
 
     ImageButton btnOpenGameSokoban;
-    ImageButton btn2;
-    ImageButton btn3;
-    ImageButton btn4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,22 +25,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnOpenGameSokoban = findViewById(R.id.btnGame1);
-        btn2 = findViewById(R.id.btnGame2);
-        btn3 = findViewById(R.id.btnGame3);
-        btn4 = findViewById(R.id.btnGame4);
 
-        btnOpenGameSokoban.setOnClickListener(new View.OnClickListener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onClick(View view) {
+            public void run() {
                 Intent intent = new Intent(MainActivity.this, SokobanActivity.class);
                 startActivity(intent);
+                finish();
             }
-        });
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        }, 1000);
     }
+//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+//            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+//            return insets;
+//        });
+//    }
 }

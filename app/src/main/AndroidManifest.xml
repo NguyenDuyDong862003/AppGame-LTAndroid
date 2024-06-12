@@ -7,7 +7,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/ttg_tang_hoa"
-        android:label="App Game 4 in 1"
+        android:label="Sokoban"
         android:roundIcon="@drawable/ttg_tang_hoa"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppGame3"
@@ -25,7 +25,7 @@
         <!--            </intent-filter>-->
         <!--        </activity>-->
         <activity
-            android:name=".MainActivity"
+            android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SokobanActivity"
+            android:name=".view.SokobanActivity"
             android:exported="false" />
 
     </application>

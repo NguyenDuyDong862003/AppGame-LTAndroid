@@ -1,4 +1,4 @@
-package com.example.appgame3;
+package com.example.appgame3.model;
 
 import java.util.Objects;
 
