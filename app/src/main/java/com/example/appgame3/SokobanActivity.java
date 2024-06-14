@@ -1,6 +1,10 @@
 package com.example.appgame3;
 
+import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -14,6 +18,7 @@ import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -23,9 +28,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class SokobanActivity extends AppCompatActivity {
+    // biến csdl
+    SQLiteDatabase myDatabase;
     //    biến model
     Model model = new Model();
     //    biến cho View
+    TextView textStatusLevel;
     Button btnBack;
     Button btnResetLevel;
     EditText inputLevel;
@@ -55,6 +63,7 @@ public class SokobanActivity extends AppCompatActivity {
         layoutMain = findViewById(R.id.layoutMain);
         containerThanhDieuKhien = findViewById(R.id.containerThanhDieuKhien);
 //        containerThanhDieuKhien.setBackgroundResource(R.drawable.ttg_tang_hoa);
+        textStatusLevel = findViewById(R.id.textStatus);
         btnBack = findViewById(R.id.buttonBack);
         btnResetLevel = findViewById(R.id.btnReset);
         inputLevel = findViewById(R.id.inputLevel);
@@ -94,9 +103,48 @@ public class SokobanActivity extends AppCompatActivity {
             }
         }
 
+        // Tạo và mở CSDL
+        myDatabase = openOrCreateDatabase("QLLevel.db", MODE_PRIVATE, null);
+        // tạo table (chỉ tạo 1 lần đầu)
+        try {
+            String sql = "create table level (numLevel INTEGER primary key, isCompleted INTEGER)";
+            myDatabase.execSQL(sql);
+            // chỉ chèn data của 15 level 1 lần đầu thôi
+            // chèn 15 dòng dòng tương ứng level 1-15 với isCompleted=false
+            try {
+                myDatabase.beginTransaction();
+                for (int i = 1; i <= 15; i++) {
+                    ContentValues myValues = new ContentValues();
+                    myValues.put("numLevel", i);
+                    myValues.put("isCompleted", 0);
+                    String msg = "";
+                    if (myDatabase.insert("level", null, myValues) == -1) {
+                        msg = "Lỗi khi chèn";
+                    } else {
+                        msg = "Chèn thành công";
+                    }
+                    Log.e("Msg", msg);
+                }
+                myDatabase.setTransactionSuccessful();
+            } catch (Exception e) {
+                Log.e("Error", "Lỗi khi chèn dữ liệu");
+            } finally {
+                myDatabase.endTransaction();
+            }
+        } catch (Exception e) {
+            Log.e("Error", "Table đã tồn tại");
+        }
+
         registerEvent();
 
         updateView(model.board);
+
+//        // set trạng thái của 15 level
+//        for (int i = 1; i <= 15; i++) {
+//            updateStatusCompletedLevel(i, 0);
+//        }
+
+        view15Status();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.sokoban), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -105,11 +153,70 @@ public class SokobanActivity extends AppCompatActivity {
         });
     }
 
+    private void view15Status() {
+//        // xem trạng thái của 15 level
+//        for (int i = 1; i <= 15; i++) {
+//            Log.e("msg", getStatusLevelFromCSDL(i) + "");
+//        }
+
+        Cursor c = myDatabase.query("level", null, null, null, null, null, null);
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                @SuppressLint("Range") int numLevel = c.getInt(c.getColumnIndex("numLevel"));
+                @SuppressLint("Range") int isCompleted = c.getInt(c.getColumnIndex("isCompleted"));
+                Log.d("LevelStatus", "Level: " + numLevel + ", Completed: " + (isCompleted == 1));
+            } while (c.moveToNext());
+            c.close();
+        } else {
+            if (c != null) {
+                c.close();
+            }
+            Log.e("ViewStatus", "Không có dữ liệu trong bảng level");
+        }
+    }
+
+    private void updateStatusCompletedLevel(int level, int status) {
+        ContentValues myValues = new ContentValues();
+        myValues.put("isCompleted", status);
+        int n = myDatabase.update("level", myValues, "numLevel=?", new String[]{level + ""});
+        String msg = "";
+        if (n == 0) {
+            msg = "Ko có dòng nào dc cập nhật";
+        } else {
+            msg = "Có " + n + " dòng đã dc cập nhật";
+        }
+        Log.e("Msg", msg);
+        Toast.makeText(SokobanActivity.this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean getStatusLevelFromCSDL(int level) {
+        Cursor c = myDatabase.query(
+                "level",                // Tên bảng
+                new String[]{"isCompleted"}, // Các cột muốn lấy, ở đây chỉ cần cột isCompleted
+                "numLevel = ?",         // Điều kiện WHERE
+                new String[]{String.valueOf(level)}, // Giá trị cho điều kiện WHERE
+                null,                   // Group by
+                null,                   // Having
+                null                    // Order by
+        );
+//        c.moveToNext();
+        c.moveToFirst();
+        int column = c.getColumnIndex("isCompleted");
+        int data = c.getInt(column);
+        c.close();
+        if (data == 1)
+            return true;
+        return false;
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
         dungChungO = false;
-        mediaPlayerSoundRomantic.pause();
+        if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
+            mediaPlayerSoundRomantic.pause();
+        }
     }
 
     @Override
@@ -119,6 +226,7 @@ public class SokobanActivity extends AppCompatActivity {
     }
 
     public void updateView(int[][] board) {
+        // cập nhật toàn bộ 9x9 ảnh
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 int intImg = Model.TREE;
@@ -162,13 +270,22 @@ public class SokobanActivity extends AppCompatActivity {
                 }
             }
         }
+        // cập nhật trạng thái level
+        boolean isCompleted = getStatusLevelFromCSDL(model.level);
+        if (isCompleted) {
+            textStatusLevel.setText("Đã hoàn thành level " + model.level);
+        } else {
+            textStatusLevel.setText("Chưa giải được level " + model.level);
+        }
     }
 
     public void registerEvent() {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayerSoundRomantic.pause();
+                if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
+                    mediaPlayerSoundRomantic.pause();
+                }
                 finish();
             }
         });
@@ -210,6 +327,10 @@ public class SokobanActivity extends AppCompatActivity {
                     if (model.checkCompleteLevel()) {
                         isWaitingForNextLevel = true;
                         System.out.println("Hoàn thành level " + model.level);
+                        view15Status();
+                        updateStatusCompletedLevel(model.level, 1);
+                        view15Status();
+                        updateView(model.board);
                         threadChuyenLevel();
                     }
                 }
@@ -234,14 +355,18 @@ public class SokobanActivity extends AppCompatActivity {
         mediaPlayerSoundRomantic.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayerSoundRomantic.pause();
+                if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
+                    mediaPlayerSoundRomantic.pause();
+                }
             }
         });
 
         mediaPlayerSoundFootstep.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayerSoundFootstep.pause();
+                if (mediaPlayerSoundFootstep != null && mediaPlayerSoundFootstep.isPlaying()) {
+                    mediaPlayerSoundFootstep.pause();
+                }
             }
         });
     }
@@ -268,7 +393,9 @@ public class SokobanActivity extends AppCompatActivity {
             containerThanhDieuKhien.setBackgroundColor(Color.parseColor("#FFFFFF"));
             if (dungChungO == true) {
                 dungChungO = false;
-                mediaPlayerSoundRomantic.pause();
+                if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
+                    mediaPlayerSoundRomantic.pause();
+                }
             }
             return false;
         }
