@@ -5,92 +5,56 @@
     android:id="@+id/sokoban"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#849ea1"
     tools:context=".view.SokobanActivity">
 
     <LinearLayout
         android:id="@+id/layoutMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/buttonBack"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="#FF66FF"
-            android:text="Back Menu" />
-
-        <TextView
-            android:id="@+id/textStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Chưa giải mã được level này" />
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="0dp">
 
         <LinearLayout
+            android:id="@+id/buttonContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-            <Button
+            <ImageButton
                 android:id="@+id/btnReset"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#FF66FF"
-                android:text="Reset level" />
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFDDDD"
+                android:src="@drawable/reset" />
 
-            <LinearLayout
+            <Button
+                android:id="@+id/btnLevelMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Nhập level"
-                    android:textColor="#FF66FF" />
-
-                <EditText
-                    android:id="@+id/inputLevel"
-                    android:layout_width="50dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:inputType="number" />
-
-                <Button
-                    android:id="@+id/btnSetLevel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="#FF66FF"
-                    android:text="Go" />
-            </LinearLayout>
-
+                android:backgroundTint="#FFDDDD"
+                android:text="Level Menu"
+                android:textColor="#000000" />
         </LinearLayout>
+
 
         <GridLayout
             android:id="@+id/gridLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFDDDD"
-            android:numColumns="9">
-            -->
-        </GridLayout>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:numColumns="9"></GridLayout>
 
-        <!--        android:background="@drawable/ttg_tang_hoa"-->
         <LinearLayout
-
             android:id="@+id/containerThanhDieuKhien"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -100,43 +64,46 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnUp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="120dp"
                     android:layout_height="60dp"
-                    android:backgroundTint="#FF66FF"
-                    android:text="Up" />
+                    android:backgroundTint="#FFDDDD"
+                    android:src="@drawable/up_ic" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#849ea1"
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnLeft"
                     android:layout_width="wrap_content"
                     android:layout_height="60dp"
-                    android:layout_weight="0"
-                    android:backgroundTint="#FF66FF"
-                    android:text="Left" />
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFDDDD"
+                    android:src="@drawable/left_ic" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnDown"
                     android:layout_width="wrap_content"
                     android:layout_height="60dp"
-                    android:layout_weight="0"
-                    android:backgroundTint="#FF66FF"
-                    android:text="Down" />
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFDDDD"
+                    android:src="@drawable/down_ic" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnRight"
                     android:layout_width="wrap_content"
                     android:layout_height="60dp"
-                    android:layout_weight="0"
-                    android:backgroundTint="#FF66FF"
-                    android:text="Right" />
+                    android:layout_weight="1"
+                    android:backgroundTint="#FFDDDD"
+                    android:src="@drawable/right_ic" />
             </LinearLayout>
         </LinearLayout>
 
