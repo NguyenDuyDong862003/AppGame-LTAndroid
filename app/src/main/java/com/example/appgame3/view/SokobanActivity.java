@@ -1,18 +1,14 @@
 package com.example.appgame3.view;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -31,10 +27,8 @@ public class SokobanActivity extends AppCompatActivity {
     //    biến model
     Model model;
     //    biến cho View
-    Button btnBack;
-    Button btnResetLevel;
-    EditText inputLevel;
-    Button btnSetLevel;
+    ImageButton btnResetLevel;
+    Button btnLevelMenu;
     ImageView[][] arrBoardImg;
     LinearLayout containerThanhDieuKhien;
     LinearLayout layoutMain;
@@ -42,12 +36,13 @@ public class SokobanActivity extends AppCompatActivity {
     static final int COL = 9;
     //    biến cho phần xử lý sk
     int[] arrIDBtnControl = {R.id.btnUp, R.id.btnRight, R.id.btnDown, R.id.btnLeft};
-    Button[] arrBtnControl;
+    ImageButton[] arrBtnControl;
     boolean isWaitingForNextLevel = false;
     boolean dungChungO = false;
     MediaPlayer mediaPlayerSoundRomantic;
     MediaPlayer mediaPlayerSoundFootstep;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,19 +55,13 @@ public class SokobanActivity extends AppCompatActivity {
 
         layoutMain = findViewById(R.id.layoutMain);
         containerThanhDieuKhien = findViewById(R.id.containerThanhDieuKhien);
-//        containerThanhDieuKhien.setBackgroundResource(R.drawable.ttg_tang_hoa);
-        btnBack = findViewById(R.id.buttonBack);
+        btnLevelMenu = findViewById(R.id.btnLevelMenu);
         btnResetLevel = findViewById(R.id.btnReset);
-        inputLevel = findViewById(R.id.inputLevel);
-        inputLevel.setText(model.level + "");
-        btnSetLevel = findViewById(R.id.btnSetLevel);
-        arrBtnControl = new Button[4];
+        arrBtnControl = new ImageButton[4];
         for (int i = 0; i < arrIDBtnControl.length; i++) {
             arrBtnControl[i] = findViewById(arrIDBtnControl[i]);
         }
-
         this.arrBoardImg = new ImageView[ROW][COL];
-
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         for (int i = 0; i < ROW; i++) {
             for (int j = 0; j < COL; j++) {
@@ -99,9 +88,12 @@ public class SokobanActivity extends AppCompatActivity {
                 gridLayout.addView(imageView);
             }
         }
+        Intent intent = getIntent();
 
+        int levelNumber = intent.getIntExtra("LEVEL_NUMBER", 1);
+        model = new Model(this);
+        model.setLevel(levelNumber);
         registerEvent();
-
         updateView(model.board);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.sokoban), (v, insets) -> {
@@ -172,25 +164,17 @@ public class SokobanActivity extends AppCompatActivity {
 
     @SuppressLint("ClickableViewAccessibility")
     public void registerEvent() {
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        btnLevelMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mediaPlayerSoundRomantic.pause();
-                finish();
+                Intent intent = new Intent(SokobanActivity.this, LevelsActivity.class);
+                startActivity(intent);
             }
         });
-
         btnResetLevel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                processSetLevel();
-            }
-        });
-
-        btnSetLevel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                processSetLevel();
+                setLevel(model.level);
             }
         });
 
@@ -216,27 +200,29 @@ public class SokobanActivity extends AppCompatActivity {
 
                     if (model.checkCompleteLevel()) {
                         isWaitingForNextLevel = true;
-                        System.out.println("Hoàn thành level " + model.level);
-                        threadChuyenLevel();
+                        // Chuyển level và cập nhật trạng thái vào csdl
+                        model.setLvCompleted();
+                        Toast.makeText(SokobanActivity.this, "Hoàn thành level " + model.level, Toast.LENGTH_SHORT).show();
+                        nextLevel();
                     }
                 }
             });
         }
 
 //      tạo cảm giác khi chạm vào layout bên ngoài input thì ẩn bàn phím đi
-        layoutMain.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (inputLevel.isFocused()) {
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(inputLevel.getWindowToken(), 0);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
+//        layoutMain.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    if (inputLevel.isFocused()) {
+//                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                        imm.hideSoftInputFromWindow(inputLevel.getWindowToken(), 0);
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
 
         mediaPlayerSoundRomantic.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -264,7 +250,6 @@ public class SokobanActivity extends AppCompatActivity {
         int rowCur = currentPos.getRow();
         int colCur = currentPos.getCol();
         if (model.board[rowCur][colCur] == Model.PLAYER_BOMB) {
-            containerThanhDieuKhien.setBackgroundResource(R.drawable.ttg_tang_hoa);
             if (dungChungO == false) {
                 dungChungO = true;
                 mediaPlayerSoundRomantic.seekTo(150);
@@ -272,7 +257,6 @@ public class SokobanActivity extends AppCompatActivity {
             }
             return true;
         } else {
-            containerThanhDieuKhien.setBackgroundColor(Color.parseColor("#FFFFFF"));
             if (dungChungO == true) {
                 dungChungO = false;
                 mediaPlayerSoundRomantic.pause();
@@ -280,53 +264,33 @@ public class SokobanActivity extends AppCompatActivity {
             return false;
         }
     }
+//
+//    private void processSetLevel() {
+//        if (isWaitingForNextLevel) {
+//            Toast.makeText(getApplicationContext(), "Không thể set level khi đang chuyển màn", Toast.LENGTH_SHORT).show();
+//            inputLevel.setText(model.level + "");
+//            return;
+//        }
+//
+//        String strLevel = inputLevel.getText().toString();
+//        if (strLevel.isEmpty()) {
+//            Toast.makeText(getApplicationContext(), "Không thể set level rỗng", Toast.LENGTH_SHORT).show();
+//            inputLevel.setText(model.level + "");
+//            return;
+//        }
+//        int level = Integer.parseInt(strLevel);
+//        if (level < 1 || level > 15) {
+//            Toast.makeText(getApplicationContext(), "Level chỉ từ 1 đến 15", Toast.LENGTH_SHORT).show();
+//            inputLevel.setText(model.level + "");
+//            return;
+//        }
+//        setLevel(level);
+//        effectWhenDungChungO();
+//    }
 
-    private void processSetLevel() {
-        if (isWaitingForNextLevel) {
-            Toast.makeText(getApplicationContext(), "Không thể set level khi đang chuyển màn", Toast.LENGTH_SHORT).show();
-            inputLevel.setText(model.level + "");
-            return;
-        }
-
-        String strLevel = inputLevel.getText().toString();
-        if (strLevel.isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Không thể set level rỗng", Toast.LENGTH_SHORT).show();
-            inputLevel.setText(model.level + "");
-            return;
-        }
-        int level = Integer.parseInt(strLevel);
-        if (level < 1 || level > 15) {
-            Toast.makeText(getApplicationContext(), "Level chỉ từ 1 đến 15", Toast.LENGTH_SHORT).show();
-            inputLevel.setText(model.level + "");
-            return;
-        }
-        setLevel(level);
-        effectWhenDungChungO();
-    }
-
-    public void threadChuyenLevel() {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-                    Log.e("MyThread", "InterruptedException: " + e.getMessage());
-                }
-
-                // Cập nhật giao diện người dùng trên luồng chính
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        setLevel(model.level + 1);
-                        inputLevel.setText(model.level + "");
-                        isWaitingForNextLevel = false;
-                    }
-                });
-            }
-        });
-        thread.start();
+    public void nextLevel() {
+        setLevel(model.level + 1);
+        isWaitingForNextLevel = false;
     }
 
     public void setLevel(int level) {
@@ -335,6 +299,13 @@ public class SokobanActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Đang ở level " + level, Toast.LENGTH_SHORT).show();
     }
 
+    //    private void updateLevelStatus() {
+//        if (level.isCleared()) {
+//            textStatus.setText("Đã qua level này");
+//        } else {
+//            textStatus.setText("Chưa giải mã được level này");
+//        }
+//    }
     public static int findElementPosition(int[] array, int target) {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == target) {

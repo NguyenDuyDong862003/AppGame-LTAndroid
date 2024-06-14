@@ -23,11 +23,13 @@ public class Model {
 
     public Model(Context context) {
         super();
-
-        this.level = 1;
+//        this.level = 1;
         dbHelper = new DatabaseHelper(context);
         levelDAO = LevelDAO.getInstance(dbHelper);
         this.setLevel(this.level);
+    }
+    public DatabaseHelper getDbHelper(){
+        return dbHelper;
     }
     public void setLevel(int level) {
         this.level = level;
@@ -38,180 +40,8 @@ public class Model {
         }
         db.close();
     }
-//    public void setLevel(int level) {
-//        this.level = level;
-//
-//        if (level == 1) {
-//            this.board = new int[][]{{TREE, TREE, WALL, WALL, WALL, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, WALL, BOMB, WALL, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, WALL, FLOOR, WALL, WALL, WALL, WALL, TREE},
-//                    {WALL, WALL, WALL, BOX, FLOOR, BOX, BOMB, WALL, TREE},
-//                    {WALL, BOMB, FLOOR, BOX, PLAYER, WALL, WALL, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, BOX, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, WALL, BOMB, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE}};
-//        }
-//
-//        if (level == 2) {
-//            this.board = new int[][]{{WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, FLOOR, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOX, PLAYER, WALL, TREE, WALL, WALL, WALL},
-//                    {WALL, FLOOR, BOX, BOX, WALL, TREE, WALL, BOMB, WALL},
-//                    {WALL, WALL, WALL, FLOOR, WALL, WALL, WALL, BOMB, WALL},
-//                    {TREE, WALL, WALL, FLOOR, FLOOR, FLOOR, FLOOR, BOMB, WALL},
-//                    {TREE, WALL, FLOOR, FLOOR, FLOOR, WALL, FLOOR, FLOOR, WALL},
-//                    {TREE, WALL, FLOOR, FLOOR, FLOOR, WALL, WALL, WALL, WALL},
-//                    {TREE, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},};
-//        }
-//        if (level == 3) {
-//            this.board = new int[][]{{TREE, WALL, WALL, WALL, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, WALL, FLOOR, FLOOR, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, FLOOR, PLAYER, BOX, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, WALL, BOX, FLOOR, WALL, WALL, TREE, TREE, TREE},
-//                    {WALL, WALL, FLOOR, BOX, FLOOR, WALL, TREE, TREE, TREE},
-//                    {WALL, BOMB, BOX, FLOOR, FLOOR, WALL, TREE, TREE, TREE},
-//                    {WALL, BOMB, BOMB, BOX_BOMB, BOMB, WALL, TREE, TREE, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 4) {
-//            this.board = new int[][]{{TREE, WALL, WALL, WALL, WALL, TREE, TREE, TREE, TREE},
-//                    {TREE, WALL, PLAYER, FLOOR, WALL, WALL, WALL, TREE, TREE},
-//                    {TREE, WALL, FLOOR, BOX, FLOOR, FLOOR, WALL, TREE, TREE},
-//                    {WALL, WALL, WALL, FLOOR, WALL, FLOOR, WALL, WALL, TREE},
-//                    {WALL, BOMB, WALL, FLOOR, WALL, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, BOMB, BOX, FLOOR, FLOOR, WALL, FLOOR, WALL, TREE},
-//                    {WALL, BOMB, FLOOR, FLOOR, FLOOR, BOX, FLOOR, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE}};
-//
-//        }
-//        if (level == 5) {
-//            this.board = new int[][]{{TREE, TREE, WALL, WALL, WALL, WALL, WALL, WALL, TREE},
-//                    {TREE, TREE, WALL, FLOOR, FLOOR, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, WALL, WALL, BOX, BOX, BOX, FLOOR, WALL, TREE},
-//                    {WALL, PLAYER, FLOOR, BOX, BOMB, BOMB, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, BOX, BOMB, BOMB, BOMB, WALL, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, FLOOR, FLOOR, WALL, TREE, TREE},
-//                    {TREE, TREE, TREE, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 6) {
-//            this.board = new int[][]{{TREE, TREE, WALL, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {WALL, WALL, WALL, FLOOR, FLOOR, PLAYER, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, BOX, BOMB, FLOOR, WALL, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, BOMB, BOX, BOMB, FLOOR, WALL, TREE},
-//                    {WALL, WALL, WALL, FLOOR, BOX_BOMB, BOX, FLOOR, WALL, TREE},
-//                    {TREE, TREE, WALL, FLOOR, FLOOR, FLOOR, WALL, WALL, TREE},
-//                    {TREE, TREE, WALL, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 7) {
-//            this.board = new int[][]{{TREE, TREE, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, WALL, BOMB, BOMB, WALL, TREE, TREE, TREE},
-//                    {TREE, WALL, WALL, FLOOR, BOMB, WALL, WALL, TREE, TREE},
-//                    {TREE, WALL, FLOOR, FLOOR, BOX, BOMB, WALL, TREE, TREE},
-//                    {WALL, WALL, FLOOR, BOX, FLOOR, FLOOR, WALL, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, WALL, BOX, BOX, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, PLAYER, FLOOR, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 8) {
-//            this.board = new int[][]{{WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, WALL, FLOOR, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, PLAYER, BOX, BOMB, BOMB, BOX, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, BOX, BOMB, BOX_BOMB, FLOOR, WALL, WALL, TREE},
-//                    {WALL, FLOOR, BOX, BOMB, BOMB, BOX, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, WALL, FLOOR, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 9) {
-//            this.board = new int[][]{{WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, FLOOR, FLOOR, WALL, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOX, BOX, BOX, WALL, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, WALL, BOMB, BOMB, WALL, WALL, WALL},
-//                    {WALL, WALL, FLOOR, FLOOR, BOMB, BOMB, BOX, FLOOR, WALL},
-//                    {TREE, WALL, FLOOR, PLAYER, FLOOR, FLOOR, FLOOR, FLOOR, WALL},
-//                    {TREE, WALL, WALL, WALL, WALL, WALL, WALL, WALL, WALL},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 10) {
-//            this.board = new int[][]{{WALL, WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {WALL, BOMB, BOMB, BOX, BOMB, BOMB, WALL, TREE, TREE},
-//                    {WALL, BOMB, BOMB, WALL, BOMB, BOMB, WALL, TREE, TREE},
-//                    {WALL, FLOOR, BOX, BOX, BOX, FLOOR, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, BOX, FLOOR, FLOOR, WALL, TREE, TREE},
-//                    {WALL, FLOOR, BOX, BOX, BOX, FLOOR, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, WALL, PLAYER, FLOOR, WALL, TREE, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 11) {
-//            this.board = new int[][]{{TREE, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, WALL, FLOOR, PLAYER, FLOOR, WALL, WALL, WALL, TREE},
-//                    {WALL, WALL, FLOOR, WALL, BOX, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, BOX_BOMB, BOMB, FLOOR, BOMB, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, BOX, BOX, FLOOR, WALL, WALL, TREE},
-//                    {WALL, WALL, WALL, FLOOR, WALL, BOMB, WALL, TREE, TREE},
-//                    {TREE, TREE, WALL, FLOOR, FLOOR, FLOOR, WALL, TREE, TREE},
-//                    {TREE, TREE, WALL, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 12) {
-//            this.board = new int[][]{{WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, FLOOR, FLOOR, WALL, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOX, FLOOR, PLAYER, WALL, TREE, TREE, TREE},
-//                    {WALL, WALL, BOX_BOMB, FLOOR, FLOOR, WALL, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOX_BOMB, FLOOR, WALL, WALL, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOX_BOMB, FLOOR, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOX_BOMB, FLOOR, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, FLOOR, BOMB, FLOOR, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 13) {
-//            this.board = new int[][]{{TREE, TREE, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, WALL, FLOOR, FLOOR, WALL, TREE, TREE, TREE},
-//                    {WALL, WALL, WALL, BOX, FLOOR, WALL, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, BOX_BOMB, FLOOR, PLAYER, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, BOX_BOMB, FLOOR, FLOOR, WALL, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, BOX_BOMB, FLOOR, WALL, WALL, TREE, TREE},
-//                    {WALL, WALL, WALL, BOX_BOMB, FLOOR, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, WALL, BOMB, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, WALL, WALL, WALL, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 14) {
-//            this.board = new int[][]{{WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE, TREE},
-//                    {WALL, FLOOR, FLOOR, FLOOR, WALL, WALL, WALL, WALL, WALL},
-//                    {WALL, FLOOR, WALL, FLOOR, WALL, FLOOR, FLOOR, FLOOR, WALL},
-//                    {WALL, FLOOR, BOX, FLOOR, FLOOR, FLOOR, BOX, FLOOR, WALL},
-//                    {WALL, BOMB, BOMB, WALL, BOX, WALL, BOX, WALL, WALL},
-//                    {WALL, BOMB, PLAYER, BOX, FLOOR, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, BOMB, BOMB, FLOOR, FLOOR, WALL, WALL, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//        if (level == 15) {
-//            this.board = new int[][]{{TREE, WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE},
-//                    {TREE, WALL, FLOOR, FLOOR, FLOOR, FLOOR, WALL, WALL, TREE},
-//                    {WALL, WALL, BOMB, WALL, WALL, BOX, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, BOMB, BOMB, BOX, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, WALL, BOX, FLOOR, FLOOR, WALL, TREE},
-//                    {WALL, FLOOR, FLOOR, PLAYER, FLOOR, WALL, WALL, WALL, TREE},
-//                    {WALL, WALL, WALL, WALL, WALL, WALL, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},
-//                    {TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE, TREE},};
-//        }
-//    }
 
     public boolean checkCompleteLevel() {
-
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (board[i][j] == BOMB || board[i][j] == PLAYER_BOMB)
@@ -220,6 +50,17 @@ public class Model {
         }
         return true;
     }
+    public void setLvCompleted(){
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        LevelDAO.getInstance(dbHelper).updateClear(db, level);
+        db.close();
+    }
+//     boolean isLevelCleared(int levelNumber) {
+//        SQLiteDatabase db = dbHelper.getReadableDatabase();
+//        boolean isCleared = levelDAO.isLevelCleared(db, levelNumber);
+//        db.close();
+//        return isCleared;
+//    }
 
     public Cell getPositionCharacter() {
         for (int i = 0; i < board.length; i++) {
