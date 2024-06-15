@@ -40,6 +40,15 @@
                 android:backgroundTint="#FFDDDD"
                 android:text="Level Menu"
                 android:textColor="#000000" />
+            <TextView
+                android:id="@+id/textStatus"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Chưa giải mã được level này"
+                android:textColor="#FF0000" />
+
+
         </LinearLayout>
 
 
