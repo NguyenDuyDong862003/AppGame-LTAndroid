@@ -102,7 +102,9 @@ public class SokobanActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         dungChungO = false;
-        mediaPlayerSoundRomantic.pause();
+        if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
+            mediaPlayerSoundRomantic.pause();
+        };
     }
 
     @Override
@@ -223,15 +225,18 @@ public class SokobanActivity extends AppCompatActivity {
         mediaPlayerSoundRomantic.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayerSoundRomantic.pause();
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }
             }
         });
 
         mediaPlayerSoundFootstep.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayerSoundFootstep.pause();
-            }
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }            }
         });
     }
 
