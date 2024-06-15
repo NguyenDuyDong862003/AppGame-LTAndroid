@@ -73,33 +73,42 @@ public class LevelDAO implements DAO<Level> {
         ContentValues values = new ContentValues();
         //Set trạng thái clear của level thành true
         Level lv = getLevel(db, levelId);
-        values.put(DatabaseHelper.CLEAR_BOARD, lv.setCleared());
+        boolean isCleared = lv.setCleared();
+        values.put(DatabaseHelper.CLEAR_BOARD, isCleared);
         String selection = DatabaseHelper.COLUMN_ID + " = ?";
         String[] selectionArgs = {String.valueOf(levelId)};
         db.update(DatabaseHelper.TABLE_LEVELS, values, selection, selectionArgs);
     }
 
-//    public int getUnclearedLevel(SQLiteDatabase readableDatabase) {
-//        String query = "SELECT * FROM " + DatabaseHelper.TABLE_LEVELS + " WHERE " + DatabaseHelper.CLEAR_BOARD + " = false";
-//        int levelId = -1;
-//        Cursor cursor = readableDatabase.rawQuery(query, null);
-//        if (cursor != null && cursor.moveToFirst()) {
-//            levelId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
-//            cursor.close();
-//            return levelId;
-//        }
-//        return levelId;
-//    }
-//@SuppressLint("Range") // bỏ qua cảnh báo về range của getColumnIndex có thể là -1
-//public boolean isLevelCleared(SQLiteDatabase db, int levelNumber) {
-//    String query = "SELECT cleared FROM levels WHERE level_id = ?";
-//    Cursor cursor = db.rawQuery(query, new String[]{ String.valueOf(levelNumber) });
-//    boolean isCleared = false;
-//    if (cursor.moveToFirst()) {
-//        isCleared = cursor.getInt(cursor.getColumnIndex("cleared")) == 1;
-//    }
-//    cursor.close();
-//    return isCleared;
-//}
+    public int getUnclearedLevel(SQLiteDatabase readableDatabase) {
+        String query = "SELECT * FROM " + DatabaseHelper.TABLE_LEVELS + " WHERE " + DatabaseHelper.CLEAR_BOARD + " = false";
+        int levelId = -1;
+        Cursor cursor = readableDatabase.rawQuery(query, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            levelId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
+            cursor.close();
+            return levelId;
+        }
+        return levelId;
+    }
+@SuppressLint("Range") // Bỏ qua cảnh báo về range của getColumnIndex có thể là -1
+public boolean isLevelCleared(SQLiteDatabase db, int levelNumber) {
+    String query = "SELECT cleared FROM levels WHERE id = ?";
+    Cursor cursor = null;
+    boolean isCleared = false;
+    try {
+        cursor = db.rawQuery(query, new String[]{String.valueOf(levelNumber)});
+        if (cursor != null && cursor.moveToFirst()) {
+            int clearedIndex = cursor.getColumnIndexOrThrow("cleared");
+            isCleared = cursor.getInt(clearedIndex) == 1;
+        }
+    } finally {
+        if (cursor != null) {
+            cursor.close();
+        }
+    }
+    return isCleared;
+}
+
 
 }
