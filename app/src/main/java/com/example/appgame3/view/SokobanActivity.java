@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.appgame3.R;
 import com.example.appgame3.model.Cell;
 import com.example.appgame3.model.Model;
@@ -41,6 +42,7 @@ public class SokobanActivity extends AppCompatActivity {
     boolean dungChungO = false;
     MediaPlayer mediaPlayerSoundRomantic;
     MediaPlayer mediaPlayerSoundFootstep;
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +106,8 @@ public class SokobanActivity extends AppCompatActivity {
         dungChungO = false;
         if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
             mediaPlayerSoundRomantic.pause();
-        };
+        }
+        ;
     }
 
     @Override
@@ -200,6 +203,7 @@ public class SokobanActivity extends AppCompatActivity {
                         // Chuyển level và cập nhật trạng thái vào csdl
                         model.setLvCompleted();
 //                        textStatus.setText("Đã qua level này");
+                        updateLevelStatus(model.level);
                         Toast.makeText(SokobanActivity.this, "Hoàn thành level " + model.level, Toast.LENGTH_SHORT).show();
                         nextLevel();
                     }
@@ -236,7 +240,8 @@ public class SokobanActivity extends AppCompatActivity {
             public void onCompletion(MediaPlayer mediaPlayer) {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
-                }            }
+                }
+            }
         });
     }
 
@@ -260,7 +265,9 @@ public class SokobanActivity extends AppCompatActivity {
         } else {
             if (dungChungO == true) {
                 dungChungO = false;
-                mediaPlayerSoundRomantic.pause();
+                if (mediaPlayerSoundRomantic != null && mediaPlayerSoundRomantic.isPlaying()) {
+                    mediaPlayerSoundRomantic.pause();
+                }
             }
             return false;
         }
@@ -289,7 +296,7 @@ public class SokobanActivity extends AppCompatActivity {
 //        effectWhenDungChungO();
 //    }
 
-public void nextLevel() {
+    public void nextLevel() {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -307,6 +314,7 @@ public void nextLevel() {
 //                        updateLevelStatus(model.level);
                         setLevel(model.level + 1);
 //                        textStatus.setText("Chưa giải mã được level này");
+                        updateLevelStatus(model.level);
                         isWaitingForNextLevel = false;
                     }
                 });
@@ -314,25 +322,27 @@ public void nextLevel() {
         });
         thread.start();
     }
+
     public void setLevel(int level) {
         model.setLevel(level);
         updateView(model.board);
         Toast.makeText(getApplicationContext(), "Đang ở level " + level, Toast.LENGTH_SHORT).show();
     }
 
-        private void updateLevelStatus(int levelNumber) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (model.isLevelCleared(levelNumber)) {
-                        textStatus.setText("Đã qua level này");
-                        textStatus.setTextColor(Color.GREEN);
-                    } else {
-                        textStatus.setText("Chưa giải mã được level này");
-                    }
+    private void updateLevelStatus(int levelNumber) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (model.isLevelCleared(levelNumber)) {
+                    textStatus.setText("Đã qua level này");
+                    textStatus.setTextColor(Color.GREEN);
+                } else {
+                    textStatus.setText("Chưa giải mã được level này");
+                    textStatus.setTextColor(Color.RED);
                 }
-            });
-        }
+            }
+        });
+    }
 
     public static int findElementPosition(int[] array, int target) {
         for (int i = 0; i < array.length; i++) {
