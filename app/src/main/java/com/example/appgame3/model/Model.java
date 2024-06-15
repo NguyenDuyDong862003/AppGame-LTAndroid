@@ -51,16 +51,16 @@ public class Model {
         return true;
     }
     public void setLvCompleted(){
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
         LevelDAO.getInstance(dbHelper).updateClear(db, level);
         db.close();
     }
-//     boolean isLevelCleared(int levelNumber) {
-//        SQLiteDatabase db = dbHelper.getReadableDatabase();
-//        boolean isCleared = levelDAO.isLevelCleared(db, levelNumber);
-//        db.close();
-//        return isCleared;
-//    }
+     public boolean isLevelCleared(int levelNumber) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        boolean isCleared = levelDAO.isLevelCleared(db, levelNumber);
+        db.close();
+        return isCleared;
+    }
 
     public Cell getPositionCharacter() {
         for (int i = 0; i < board.length; i++) {

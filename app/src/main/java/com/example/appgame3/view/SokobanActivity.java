@@ -2,23 +2,22 @@ package com.example.appgame3.view;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.example.appgame3.R;
 import com.example.appgame3.model.Cell;
 import com.example.appgame3.model.Model;
@@ -29,6 +28,7 @@ public class SokobanActivity extends AppCompatActivity {
     //    biến cho View
     ImageButton btnResetLevel;
     Button btnLevelMenu;
+    TextView textStatus;
     ImageView[][] arrBoardImg;
     LinearLayout containerThanhDieuKhien;
     LinearLayout layoutMain;
@@ -41,7 +41,6 @@ public class SokobanActivity extends AppCompatActivity {
     boolean dungChungO = false;
     MediaPlayer mediaPlayerSoundRomantic;
     MediaPlayer mediaPlayerSoundFootstep;
-
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,7 @@ public class SokobanActivity extends AppCompatActivity {
         mediaPlayerSoundFootstep = MediaPlayer.create(this, R.raw.pop_sound_effect);
 
         layoutMain = findViewById(R.id.layoutMain);
+        textStatus = findViewById(R.id.textStatus);
         containerThanhDieuKhien = findViewById(R.id.containerThanhDieuKhien);
         btnLevelMenu = findViewById(R.id.btnLevelMenu);
         btnResetLevel = findViewById(R.id.btnReset);
@@ -93,14 +93,9 @@ public class SokobanActivity extends AppCompatActivity {
         int levelNumber = intent.getIntExtra("LEVEL_NUMBER", 1);
         model = new Model(this);
         model.setLevel(levelNumber);
+        updateLevelStatus(levelNumber);
         registerEvent();
         updateView(model.board);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.sokoban), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
 
     @Override
@@ -202,6 +197,7 @@ public class SokobanActivity extends AppCompatActivity {
                         isWaitingForNextLevel = true;
                         // Chuyển level và cập nhật trạng thái vào csdl
                         model.setLvCompleted();
+//                        textStatus.setText("Đã qua level này");
                         Toast.makeText(SokobanActivity.this, "Hoàn thành level " + model.level, Toast.LENGTH_SHORT).show();
                         nextLevel();
                     }
@@ -288,24 +284,51 @@ public class SokobanActivity extends AppCompatActivity {
 //        effectWhenDungChungO();
 //    }
 
-    public void nextLevel() {
-        setLevel(model.level + 1);
-        isWaitingForNextLevel = false;
-    }
+public void nextLevel() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+                    Log.e("MyThread", "InterruptedException: " + e.getMessage());
+                }
 
+                // Cập nhật giao diện người dùng trên luồng chính
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        updateLevelStatus(model.level);
+                        setLevel(model.level + 1);
+//                        textStatus.setText("Chưa giải mã được level này");
+                        isWaitingForNextLevel = false;
+                    }
+                });
+            }
+        });
+        thread.start();
+    }
     public void setLevel(int level) {
         model.setLevel(level);
         updateView(model.board);
         Toast.makeText(getApplicationContext(), "Đang ở level " + level, Toast.LENGTH_SHORT).show();
     }
 
-    //    private void updateLevelStatus() {
-//        if (level.isCleared()) {
-//            textStatus.setText("Đã qua level này");
-//        } else {
-//            textStatus.setText("Chưa giải mã được level này");
-//        }
-//    }
+        private void updateLevelStatus(int levelNumber) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (model.isLevelCleared(levelNumber)) {
+                        textStatus.setText("Đã qua level này");
+                        textStatus.setTextColor(Color.GREEN);
+                    } else {
+                        textStatus.setText("Chưa giải mã được level này");
+                    }
+                }
+            });
+        }
+
     public static int findElementPosition(int[] array, int target) {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == target) {
